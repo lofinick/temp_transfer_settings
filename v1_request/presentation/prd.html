@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRD: 中转站设置</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --surface: #ffffff;
+            --text-primary: #111111;
+            --text-secondary: #666666;
+            --border: #eaeaea;
+            --accent: #2563eb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin: 16px 0;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        .super-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            margin-top: 0;
+            letter-spacing: -0.5px;
+        }
+        .summary-text {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        .meta-block {
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: #f9f9f9;
+            padding: 16px 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+        .meta-block a {
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 56px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+        p, ul, li {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        ul {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        th {
+            font-weight: 500;
+            color: var(--text-primary);
+            background: #fafafa;
+        }
+        .highlight {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 12px;
+            color: #24292e;
+        }
+        .prototype-link {
+            display: inline-block;
+            margin-top: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .agent-prompt-box {
+            margin-bottom: 48px;
+            padding: 16px;
+            border: 1px dashed #ccc;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .agent-prompt-box-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .agent-prompt-box-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+        .toc-wrapper {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 260px;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toc-wrapper:hover {
+            left: 0;
+        }
+        .toc-container {
+            width: 260px;
+            height: 100vh;
+            background: #ffffff;
+            border-right: 1px solid var(--border);
+            box-shadow: 4px 0 15px rgba(0,0,0,0.05);
+            padding: 32px 24px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .toc-trigger {
+            position: absolute;
+            top: 50%;
+            right: -32px;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 80px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+        .toc-wrapper:hover .toc-trigger {
+            background: #fafafa;
+        }
+        .toc-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-left: 8px;
+        }
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc-item {
+            margin-bottom: 2px;
+        }
+        .toc-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            display: block;
+            padding: 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            line-height: 1.4;
+        }
+        .toc-link:hover {
+            color: var(--text-primary);
+            background: #f4f4f5;
+        }
+        .toc-level-1 {
+            margin-top: 16px;
+        }
+        .toc-level-1 > .toc-link {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .toc-level-2 > .toc-link {
+            font-size: 12.5px;
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="toc-wrapper">
+        <div class="toc-container">
+            <div class="toc-title">Table of Contents</div>
+            <ul class="toc-list" id="toc-list"></ul>
+        </div>
+        <div class="toc-trigger">
+            <svg width="12" height="24" viewBox="0 0 12 24" fill="currentColor">
+                <path d="M3 6h6v2H3zm0 5h6v2H3zm0 5h6v2H3z"/>
+            </svg>
+        </div>
+    </div>
+    <div class="container">
+        <div class="super-title">产品需求 EDF Request</div>
+        <h1>Transfer Settings (中转站设置)</h1>
+        
+        <p class="summary-text">本需求文档全面定义了 Cuneflow 网页端中转站设置 (Transfer Settings) 的功能架构、核心用户场景、数据契约、验收边界以及前端交互状态机。</p>
+
+        <div class="meta-block">
+            生命周期状态: In Review (评审中)<br>
+            项目进度: 设计: 0% 开发: 0%<br>
+            更新日期: 2026年6月17日<br>
+            视图声明 (View Disclaimer)<br>
+            本页面仅为方便传统阅读而生成的交付物视图 (Deliverable View)，并非单一事实来源 (Source of Truth, SSOT)。所有实际的契约与逻辑，请严格以代码库中该 Request 的 Markdown 和 HTML 源码文件夹为准：<br>
+            <a href="/edfs/transfer_settings/staging/requests/v1_request/">/edfs/transfer_settings/staging/requests/v1_request/</a>
+        </div>
+
+        <div class="agent-prompt-box">
+            <div class="agent-prompt-box-desc">您可以点击下方文本框自动复制提示词，发送给您的 AI 助手以快速拉齐产研上下文：</div>
+            <pre id="prompt-text" onclick="copyPrompt()" style="cursor: pointer; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="点击复制"><code>请完整阅读位于 `https://github.com/lofinick/temp_transfer_settings` 的“中转站设置 (Transfer Settings)”功能需求。
+
+该项目包含了产品边界划分 (01_product)、数据结构契约 (02_contracts)、交互原型 (03_interface) 和质量验收指南 (04_checks)。
+
+请仔细阅读上述资料以充分拉齐产研上下文。阅读完成后，请：
+1. 用一段话简要概述你对该模块核心产品逻辑的理解；
+2. 结合现有资料，为我推荐 3 个高优先级的下一步执行动作（例如方案查漏、代码开发或测试用例编写），以便我们快速切入工作。</code></pre>
+            <div id="copy-toast" style="display: none; color: #059669; font-size: 13px; margin-top: 8px; font-weight: 500;">✓ 提示词已复制到剪贴板！</div>
+        </div>
+
+        <div class="content-section">
+        <div class="section-title">Part 1: 架构、边界与用户故事 (Product Architecture & User Stories)</div>
+        <div class="ssot-link">🔗 <a href="../01_product/overview.md" target="_blank" rel="noopener">SSOT: 01_product/overview.md</a> | <a href="../01_product/user_stories.md" target="_blank" rel="noopener">01_product/user_stories.md</a></div>
+        
+        <h3>用户任务与 MVP 范围</h3>
+        <p><strong>用户来到 Transfer Settings，主要为了完成：</strong></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>用户任务</th>
+                    <th>对应模块</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>查看账户和存储状态</td><td>Account</td></tr>
+                <tr><td>设置录音/文件同步保留策略</td><td>Sync</td></tr>
+                <tr><td>连接 Notion / Google Drive 等导出目的地</td><td>Export</td></tr>
+                <tr><td>设置 AI 自动处理偏好</td><td>AI Boost (CLI 扩展)</td></tr>
+                <tr><td>处理异常：空间满、授权失效、隐私设置确认</td><td>Account / Export</td></tr>
+            </tbody>
+        </table>
+        
+        <p><strong>MVP In Scope：</strong></p>
+        <ul>
+            <li>四个 Tab 的基础信息架构</li>
+            <li>存储容量展示与 90% / 100% 状态</li>
+            <li>Retention 设置</li>
+            <li>Notion 授权状态展示与重授权</li>
+            <li>data training opt-in 默认关闭</li>
+        </ul>
+        <p><strong>Out of Scope for v1：</strong></p>
+        <ul>
+            <li>Billing Hub 完整购买流程</li>
+            <li>多个第三方集成的完整管理</li>
+            <li>团队/企业权限管理</li>
+            <li>复杂 AI workflow builder</li>
+            <li>历史导出日志与失败重试队列可视化</li>
+        </ul>
+
+        <h3>网页端控制权 (Web Transit Station)</h3>
+        <p>提供对多端通用的云资源、第三方集成与 AI 工作流的治理。呈现为四大平滑切换的 Tab：Account、Sync、Export、AI Boost。</p>
+        
+        <h3>1. 存储空间熔断与恢复闭环 (Storage Quota Flow)</h3>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Normal : 账户初始化
+    
+    Normal --> Warning : 容量到达 90%
+    Warning --> Normal : 用户主动清理文件
+    
+    Warning --> Blocked : 硬件持续并发写入致 100%
+    Normal --> Blocked : 大文件单次突增致 100%
+    
+    Blocked --> Normal : 前往 Billing Hub 购买扩容
+    Blocked --> Normal : 用户主动清理文件
+        </div>
+        <ul>
+            <li><strong>Warning 触发</strong>：当达到 90% 时，网页端前端获取到信号，UI 静默渲染红色警示进度条。此时硬件上传不断联。</li>
+            <li><strong>Blocked 阻断</strong>：突破 100% 阈值的瞬间，API 网关强制拒绝一切硬件的 POST 请求，统一返回 HTTP 403，Body 必须包含以下结构以便前端准确判断异常类型：
+<pre><code>{
+  "error_code": "storage_quota_exceeded",
+  "message": "Storage quota exceeded",
+  "current_usage_bytes": 1000000000,
+  "quota_bytes": 1000000000
+}</code></pre>
+            网页端同步状态标记为 Blocked。</li>
+        </ul>
+
+        <h3>2. 第三方授权自愈闭环 (Integration Token Flow)</h3>
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> Disconnected : 初始未授权
+    
+    Disconnected --> Connected : 用户走完 OAuth 流程
+    
+    Connected --> Token_Expired : 第三方撤销或安全拦截 (401)
+    
+    Token_Expired --> Connected : 用户点击 Re-auth 重新授权
+    Token_Expired --> Disconnected : 用户点击彻底解绑
+        </div>
+        <ul>
+            <li><strong>隐式降级</strong>：后端被 Notion 等接口阻断抛出 401 时，必须立刻将该用户设置表状态强置为 token_expired。</li>
+            <li><strong>前端捕获与自愈</strong>：接口返回 token_expired，前端屏蔽正常的管理界面，高亮显示橙色的重授权按钮，引导用户完成二次握手。</li>
+        </ul>
+        
+        <h3>3. 数据同步与保存机制</h3>
+        <ul>
+            <li><strong>自动保存与防抖</strong>：所有设置项采用无刷新自动保存，连续操作触发 >500ms 的防抖机制，避免竞态条件。</li>
+            <li><strong>状态反馈</strong>：保存中必须有 Loading 反馈；保存失败必须将开关 UI 回弹并弹出全局报错 Toast。</li>
+            <li><strong>轮询策略</strong>：针对空间容量等强相关指标，用户停留页面时需开启长轮询或短轮询刷新数据。</li>
+        </ul>
+        </div>
+
+        <div class="content-section">
+        <div class="section-title">Part 2: 后端数据契约 (System Contracts)</div>
+        <div class="ssot-link">🔗 <a href="../02_contracts/user_settings_schema.md" target="_blank" rel="noopener">SSOT: 02_contracts/user_settings_schema.md</a></div>
+        <pre><code>{
+  "user_id": "usr_9a8b7c6d5e4f3g",
+  "sync_data_preferences": {
+    "recording_cloud_retention_days": null
+  },
+  "privacy_and_security": {
+    "data_training_opt_in": false
+  },
+  "export_integrations": {
+    "default_destination": "notion",
+    "default_format": "markdown",
+    "connections": {
+      "notion": {
+        "status": "connected",
+        "last_synced": "2026-06-15T10:00:00Z"
+      }
+    }
+  }
+}</code></pre>
+        </div>
+
+        <div class="content-section">
+        <div class="section-title">Part 3: 交互原型与状态降级 (Interface & Interaction States)</div>
+        <div class="ssot-link">🔗 <a href="../03_interface/settings_prototype.html" target="_blank" rel="noopener">SSOT: 03_interface/settings_prototype.html</a> | <a href="../03_interface/interaction_states.md" target="_blank" rel="noopener">03_interface/interaction_states.md</a></div>
+        <p>UI 采用极简的北欧风格 (Nordic-inspired) 设计。设置页面的入口隐藏于左下角的个人头像菜单内。
+        <br><a href="../03_interface/settings_prototype.html" target="_blank" class="prototype-link">🔗 点击查看高保真 HTML 交互原型</a></p>
+        
+        <h3>交互边界与响应式规范</h3>
+        <ul>
+            <li><strong>初次加载</strong>：要求使用灰色渐变骨架屏 (Skeleton) 平滑过渡，禁止白屏闪烁。</li>
+            <li><strong>异常视觉</strong>：Notion 授权过期时，强制渲染为浅橙色背景的 <code>Re-authenticate</code> 专属卡片。</li>
+            <li><strong>Toast 组件</strong>：定义了 <code>z-index: 9999</code> 的全局轻量提示，成功停留 2s，失败停留 4s 且伴随 UI 强制回弹。</li>
+            <li><strong>移动端降级 (Mobile)</strong>：&lt; 768px 时，Sidebar 降级为汉堡菜单 + 抽屉，内页 Nav 降级为顶部水平滑动 Tab。</li>
+        </ul>
+        </div>
+
+        <div class="content-section">
+        <div class="section-title">Part 4: 验收标准 (QA Edge Cases)</div>
+        <div class="ssot-link">🔗 <a href="../04_checks/qa_guidelines.md" target="_blank" rel="noopener">SSOT: 04_checks/qa_guidelines.md</a></div>
+        
+        <h3>1. 前端交互与状态自愈防线</h3>
+        <ul>
+            <li><strong>状态不同步与回弹</strong>：用户点击开启 Opt-in 的瞬间断网，UI 开关必须在 Catch 到报错后平滑回弹至关闭状态，严禁出现“假开启”。</li>
+            <li><strong>授权失效的隐式捕获</strong>：后台修改 token_expired 状态，前端必须立刻拦截设置更改，渲染橙色的重新授权卡片。</li>
+        </ul>
+
+        <h3>2. 后端并发与原子阻断防线</h3>
+        <ul>
+            <li><strong>并发写满的竞态防御</strong>：当空间剩 10MB 时，并行打入两个 8MB 文件，系统必须采用原子化的容量预占/提交机制，确保并发上传时不会突破用户容量上限。具体实现可由工程侧决定，例如数据库事务、行锁、Redis 分布式锁或对象存储回调校验。有且仅有一个请求能进，另一个强阻断并报错 403。</li>
+            <li><strong>定时任务清理安全</strong>：Retention 的 Cron Job 批量执行删除时，不能锁表卡死用户的其他设置读写操作。</li>
+        </ul>
+
+        <h3>3. 隐私基线</h3>
+        <ul>
+            <li>任何新用户的 <code>data_training_opt_in</code> 字段绝对不得在初始插入数据库时被赋值为 true。</li>
+        </ul>
+        </div>
+
+        <div class="content-section">
+        <div class="section-title">Part 5: AI Boost 预留声明 (AI Boost MCP / CLI)</div>
+        <div class="ssot-link">🔗 <a href="../01_product/overview.md" target="_blank" rel="noopener">SSOT: 01_product/overview.md</a></div>
+        
+        <p>关于 <code>AI Boost</code> 的具体配置项目前由极客命令行 <code>$ npx @cuneflow/ai-boost init</code> (基于 MCP 协议) 占位，其数据契约与产品逻辑将由独立的专项需求铺开。</p>
+        <p><em>注：当 AI Boost (MCP CLI) 专项 PRD 编写完成后，请在此处补充指向该 PRD 的永久链接，以完善闭环。</em></p>
+        </div>
+
+        <script>
+            function copyPrompt() {
+                const text = document.querySelector('#prompt-text code').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const toast = document.getElementById('copy-toast');
+                    toast.style.display = 'block';
+                    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+                });
+            }
+
+            // Generate TOC automatically
+            document.addEventListener('DOMContentLoaded', () => {
+                const tocList = document.getElementById('toc-list');
+                const headings = document.querySelectorAll('.section-title, h3');
+                
+                headings.forEach((heading, index) => {
+                    if (!heading.id) {
+                        heading.id = `heading-${index}`;
+                    }
+                    
+                    const isLevel1 = heading.classList.contains('section-title');
+                    const li = document.createElement('li');
+                    li.className = `toc-item ${isLevel1 ? 'toc-level-1' : 'toc-level-2'}`;
+                    
+                    const a = document.createElement('a');
+                    a.href = `#${heading.id}`;
+                    a.className = 'toc-link';
+                    
+                    let text = heading.textContent.split('(')[0].trim();
+                    text = text.replace(/^Part \d+:\s*/, ''); // Remove "Part X: "
+                    if (text.length > 20 && !isLevel1) text = text.substring(0, 20) + '...';
+                    a.textContent = text;
+                    
+                    li.appendChild(a);
+                    tocList.appendChild(li);
+                });
+            });
+        </script>
+
+    </div>
+</body>
+</html>

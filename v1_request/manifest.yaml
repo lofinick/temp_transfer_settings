@@ -1,0 +1,15 @@
+id: v1_request
+status: staging
+target_edf: edfs/transfer_settings
+created_by: product
+created_at: 2026-06-17
+lifecycle_status: "in_review"
+progress:
+  design: "0%"
+  development: "0%"
+contains:
+  - 01_product
+  - 02_contracts
+  - 03_interface
+  - 04_checks
+promotion_rule: requires explicit review before entering SSOT
